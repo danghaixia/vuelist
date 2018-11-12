@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>THE NEWS 简报</title>
+	<script src="https://cdn.bootcss.com/vue/2.5.17/vue.min.js"></script>
+	<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+	<link rel="stylesheet" href="./css/common.css">
+	<link rel="stylesheet" href="./css/list.css">
+</head>
+<body>
+	<div class="container">
+		<!-- 导航 -->
+		<div class="nav">
+			<ul>
+				<li @click='changeCategory(c)' :class="{current:c.id == category.id}" v-for='c in categories'><a href="javascript:void(0)">{{c.name}}</a></li>
+				
+			</ul>
+		</div>
+		<!-- 主体 -->
+		<div class="main">
+			<ul>
+
+				<li @click='toArticle(a)' class="style-two" v-for='a in articles'>
+					<div class="title">{{a.title}}</div>
+		<div class="photo">
+						<ul v-if='a.articleFileVMs.length>0'>
+							<li v-for='f in a.articleFileVMs'><a href="javascript:void(0);">
+								<img :src="'http://134.175.154.93:8888/group1/'+f.cmsFile.id" alt="">
+							</a></li>
+						</ul>
+
+						<ul v-else>
+							<li><a href="javascript:void(0);">
+								<img src="./images/list1.jpg" alt="">
+							</a></li>
+						</ul>
+					</div>
+					<div class="info">
+						<div class="left">
+							<span>{{a.category.name}}</span>
+						</div>
+						<div class="right">
+							<span>{{a.readtimes}}阅读</span>
+						</div>
+					</div>
+				</li>
+
+			</ul>
+		</div>
+	</div>
+	<script>
+		axios.defaults.baseURL = 'http://119.23.250.46:8099';
+
+
+		new Vue({
+			el:'.container',
+			data:{
+				categories:[],
+				articles:[],
+				category:null
+			},
+			watch:{
+				category : function(){
+					this.findArticlesByCategoryId();
+				}
+			},
+			created(){
+				this.findAllCategories();
+
+			},
+			methods:{
+				toArticle(a){
+					window.location = 'content.html?id='+a.id;
+				},
+				changeCategory(c){
+					this.category = c;
+				},
+				findAllCategories(){
+					axios.get('/manager/category/findAllCategory')
+					.then(({data:result})=>{
+						this.categories = result.data;
+						this.category = result.data[0];
+					})
+				},
+				findArticlesByCategoryId(){
+					axios.get('/manager/article/findArticle',{
+						params:{
+							page:0,
+							pageSize:1000,
+							categoryId:this.category.id
+						}
+					})
+					.then(({data:result})=>{
+						this.articles = result.data.list;
+					})
+				}
+			}
+		})
+	</script>
+	
+</body>
+</html>
+
+
+
+
+
+
+

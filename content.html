@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>看点咨询精选</title>
+	<script src="https://cdn.bootcss.com/vue/2.5.17/vue.min.js"></script>
+	<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+	<link rel="stylesheet" href="./css/common.css">
+	<link rel="stylesheet" href="./css/content.css">
+</head>
+<body>
+	<div class="container">
+		<h2>{{article.title}}</h2>
+		<div>
+			{{article.category.name}}
+
+			{{article.publishtime}}
+		</div>
+		<div>
+			{{article.content}}
+		</div>
+		<!-- {{article}} -->
+	</div>
+	<script>
+		axios.defaults.baseURL = 'http://119.23.250.46:8099';
+
+		new Vue({
+			el:'.container',
+			data:{
+				id:undefined,
+				article:{}
+			},
+			created(){
+				let url = window.location.toString();
+				url = url.substring(url.indexOf('?')+1);
+				params = url.split('=');
+				let id = params[1];
+				this.id = id;
+
+				this.readArticle();
+			},
+			methods:{
+				readArticle(){
+					axios.get('/index/readArticle?id='+this.id)
+					.then(({data:result})=>{
+						this.article = result.data;
+					})
+				}
+			}
+
+		})
+	</script>
+</body>
+</html>
